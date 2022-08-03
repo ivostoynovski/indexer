@@ -13,6 +13,7 @@ import * as x2y2 from "@/events-sync/data/x2y2";
 import * as zeroExV4 from "@/events-sync/data/zeroex-v4";
 import * as rarible from "@/events-sync/data/rarible";
 import * as element from "@/events-sync/data/element";
+import * as zora from "@/events-sync/data/zora";
 
 // All events we're syncing should have an associated `EventData`
 // entry which dictates the way the event will be parsed and then
@@ -55,7 +56,8 @@ export type EventDataKind =
   | "element-erc721-sell-order-filled"
   | "element-erc721-buy-order-filled"
   | "element-erc1155-sell-order-filled"
-  | "element-erc1155-buy-order-filled";
+  | "element-erc1155-buy-order-filled"
+  | "zora-ask-filled";
 
 export type EventData = {
   kind: EventDataKind;
@@ -104,6 +106,7 @@ export const getEventData = (eventDataKinds: EventDataKind[] | undefined) => {
       element.erc721SellOrderFilled,
       element.erc1155BuyOrderFilled,
       element.erc1155SellOrderFilled,
+      zora.askFilled,
     ];
   } else {
     return (
@@ -190,6 +193,8 @@ const internalGetEventData = (kind: EventDataKind): EventData | undefined => {
       return element.erc1155SellOrderFilled;
     case "element-erc1155-buy-order-filled":
       return element.erc1155BuyOrderFilled;
+    case "zora-ask-filled":
+      return zora.askFilled;
     default:
       return undefined;
   }

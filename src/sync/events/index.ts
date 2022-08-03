@@ -1816,6 +1816,32 @@ export const syncEvents = async (
 
               break;
             }
+
+            case "zora-ask-filled": {
+              // const { args } = eventData.abi.parseLog(log);
+              // const tokenContract = args["tokenContract"].toLowerCase();
+              // const tokenId = args["tokenId"].toLowerCase();
+              // const buyer = args["buyer"].toLowerCase();
+              // const seller = args["seller"].toLowerCase();
+              // const price = args["price"].toLowerCase();
+
+              // console.log(args);
+
+              // fillEventsPartial.push({
+              //   orderKind: "element-erc1155",
+              //   orderId: orderHash,
+              //   orderSide: "buy",
+              //   maker,
+              //   taker,
+              //   price,
+              //   contract: erc1155Token,
+              //   tokenId: erc1155TokenId,
+              //   amount: erc1155FillAmount,
+              //   baseEventParams,
+              // });
+
+              break;
+            }
           }
         } catch (error) {
           logger.info("sync-events", `Failed to handle events: ${error}`);
