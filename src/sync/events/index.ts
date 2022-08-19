@@ -2111,32 +2111,30 @@ export const syncEvents = async (
       for (const [txHash, mints] of tokensMinted.entries()) {
         if (mints.length > 0) {
           const tx = await syncEventsUtils.fetchTransaction(txHash);
-          if (tx.value === "0") {
-            continue;
-          }
+
+          if (tx.value === "0") continue;
 
           const totalAmount = mints
             .map(({ amount }) => amount)
             .reduce((a, b) => bn(a).add(b).toString());
-          const price = bn(tx.value).div(totalAmount);
-          price;
-          // for (const mint of mints) {
-          //   fillEvents.push({
-          //     // Do we want to differentiate between erc721 vs erc1155?
-          //     orderKind: "mint",
-          //     orderSourceIdInt: null,
-          //     orderSide: "sell",
-          //     maker: mint.baseEventParams.address,
-          //     taker: tx.from,
-          //     amount: mint.amount,
-          //     currency: Sdk.Common.Addresses.Eth[config.chainId],
-          //     price: price,
-          //     usdPrice: prices.usdPrice,
-          //     contract: mint.contract,
-          //     tokenId: mint.tokenId,
-          //     baseEventParams: mint.baseEventParams,
-          //   });
-          // }
+          const price = bn(tx.value).div(totalAmount).toString();
+
+          for (const mint of mints) {
+            fillEvents.push({
+              // Do we want to differentiate between erc721 vs erc1155?
+              orderKind: "mint",
+              orderSide: "sell",
+              maker: mint.baseEventParams.address,
+              taker: tx.from,
+              amount: mint.amount,
+              currency: Sdk.Common.Addresses.Eth[config.chainId],
+              price: price,
+              // usdPrice: prices.usdPrice,
+              contract: mint.contract,
+              tokenId: mint.tokenId,
+              baseEventParams: mint.baseEventParams,
+            });
+          }
         }
       }
 
