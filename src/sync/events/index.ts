@@ -2117,19 +2117,26 @@ export const syncEvents = async (
           const totalAmount = mints
             .map(({ amount }) => amount)
             .reduce((a, b) => bn(a).add(b).toString());
+
           const price = bn(tx.value).div(totalAmount).toString();
 
+          const currency = Sdk.Common.Addresses.Eth[config.chainId];
+
           for (const mint of mints) {
+            const prices = await getPrices(currency, price, mint.baseEventParams.timestamp);
+
             fillEvents.push({
               // Do we want to differentiate between erc721 vs erc1155?
               orderKind: "mint",
               orderSide: "sell",
+              orderSourceIdInt: undefined,
+              fillSourceId: undefined,
               maker: mint.baseEventParams.address,
               taker: tx.from,
               amount: mint.amount,
-              currency: Sdk.Common.Addresses.Eth[config.chainId],
+              currency,
               price: price,
-              // usdPrice: prices.usdPrice,
+              usdPrice: prices.usdPrice,
               contract: mint.contract,
               tokenId: mint.tokenId,
               baseEventParams: mint.baseEventParams,
