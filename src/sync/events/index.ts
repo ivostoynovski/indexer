@@ -63,6 +63,7 @@ export const syncEvents = async (
     string,
     {
       contract: string;
+      from: string;
       tokenId: string;
       amount: string;
       baseEventParams: BaseEventParams;
@@ -228,6 +229,7 @@ export const syncEvents = async (
                 tokensMinted.get(baseEventParams.txHash)!.push({
                   contract: baseEventParams.address,
                   tokenId,
+                  from,
                   amount: "1",
                   baseEventParams,
                 });
@@ -292,9 +294,13 @@ export const syncEvents = async (
                   tokenId,
                   mintedTimestamp: baseEventParams.timestamp,
                 });
+
+                tokensMinted.set(baseEventParams.txHash, []);
+
                 tokensMinted.get(baseEventParams.txHash)!.push({
                   contract: baseEventParams.address,
                   tokenId,
+                  from,
                   amount,
                   baseEventParams,
                 });
@@ -311,6 +317,9 @@ export const syncEvents = async (
               const amounts = parsedLog.args["amounts"].map(String);
 
               const count = Math.min(tokenIds.length, amounts.length);
+
+              tokensMinted.set(baseEventParams.txHash, []);
+
               for (let i = 0; i < count; i++) {
                 nftTransferEvents.push({
                   kind: "erc1155",
@@ -366,6 +375,7 @@ export const syncEvents = async (
                     contract: baseEventParams.address,
                     tokenId: tokenIds[i],
                     amount: amounts[i],
+                    from,
                     baseEventParams,
                   });
                 }
@@ -2112,7 +2122,7 @@ export const syncEvents = async (
         if (mints.length > 0) {
           const tx = await syncEventsUtils.fetchTransaction(txHash);
 
-          if (tx.value === "0") continue;
+          // if (tx.value === "0") continue;
 
           const totalAmount = mints
             .map(({ amount }) => amount)
@@ -2133,8 +2143,8 @@ export const syncEvents = async (
               // Do we want to differentiate between erc721 vs erc1155?
               orderKind: "mint",
               orderSide: "sell",
-              maker: mint.baseEventParams.address,
               taker: tx.from,
+              maker: mint.from,
               amount: mint.amount,
               currency,
               price: price,
